@@ -15,7 +15,7 @@ __description__ = 'HTTP Proxy Server in Python'
 __author__ = 'Abhinav Singh'
 __author_email__ = 'mailsforabhinav@gmail.com'
 __homepage__ = 'https://github.com/abhinavsingh/proxy.py'
-__license__ = 'BSD'
+__license__ = 'SD'
 
 import sys
 import multiprocessing
@@ -57,7 +57,7 @@ def bytes_(s, encoding='utf-8', errors='strict'):
 
 version = bytes_(__version__)
 
-CRLF, COLON, SP = b'\r\n', b':', b' '
+CRLF, COLON, SP = '\r\n', ':', ' '
 
 HTTP_REQUEST_PARSER = 1
 HTTP_RESPONSE_PARSER = 2
@@ -79,8 +79,8 @@ class ChunkParser(object):
     
     def __init__(self):
         self.state = CHUNK_PARSER_STATE_WAITING_FOR_SIZE
-        self.body = b''
-        self.chunk = b''
+        self.body = ''
+        self.chunk = ''
         self.size = None
     
     def parse(self, data):
@@ -103,7 +103,7 @@ class ChunkParser(object):
                     self.state = CHUNK_PARSER_STATE_COMPLETE
                 else:
                     self.state = CHUNK_PARSER_STATE_WAITING_FOR_SIZE
-                self.chunk = b''
+                self.chunk = ''
                 self.size = None
         return len(data) > 0, data
 
@@ -114,8 +114,8 @@ class HttpParser(object):
         self.state = HTTP_PARSER_STATE_INITIALIZED
         self.type = type if type else HTTP_REQUEST_PARSER
         
-        self.raw = b''
-        self.buffer = b''
+        self.raw = ''
+        self.buffer = ''
         
         self.headers = dict()
         self.body = None
@@ -131,7 +131,7 @@ class HttpParser(object):
     def parse(self, data):
         self.raw += data
         data = self.buffer + data
-        self.buffer = b''
+        self.buffer = ''
         
         more = True if len(data) > 0 else False
         while more: 
@@ -142,14 +142,14 @@ class HttpParser(object):
         if self.state >= HTTP_PARSER_STATE_HEADERS_COMPLETE and \
         (self.method == b"POST" or self.type == HTTP_RESPONSE_PARSER):
             if not self.body:
-                self.body = b''
+                self.body = ''
 
-            if b'content-length' in self.headers:
+            if 'content-length' in self.headers:
                 self.state = HTTP_PARSER_STATE_RCVING_BODY
                 self.body += data
-                if len(self.body) >= int(self.headers[b'content-length'][1]):
+                if len(self.body) >= int(self.headers['content-length'][1]):
                     self.state = HTTP_PARSER_STATE_COMPLETE
-            elif b'transfer-encoding' in self.headers and self.headers[b'transfer-encoding'][1].lower() == b'chunked':
+            elif 'transfer-encoding' in self.headers and self.headers['transfer-encoding'][1].lower() == 'chunked':
                 if not self.chunker:
                     self.chunker = ChunkParser()
                 self.chunker.parse(data)
@@ -157,7 +157,7 @@ class HttpParser(object):
                     self.body = self.chunker.body
                     self.state = HTTP_PARSER_STATE_COMPLETE
             
-            return False, b''
+            return False, ''
         
         line, data = HttpParser.split(data)
         if line == False: return line, data
@@ -184,7 +184,7 @@ class HttpParser(object):
         else:
             self.version = line[0]
             self.code = line[1]
-            self.reason = b' '.join(line[2:])
+            self.reason = ' '.join(line[2:])
         self.state = HTTP_PARSER_STATE_LINE_RCVD
     
     def process_header(self, data):
@@ -202,7 +202,7 @@ class HttpParser(object):
     
     def build_url(self):
         if not self.url:
-            return b'/None'
+            return '/None'
         
         url = self.url.path
         if url == b'': url = b'/'
@@ -453,7 +453,7 @@ class Proxy(multiprocessing.Process):
                     b'Content-Length: 11',
                     b'Connection: close',
                     CRLF
-                ]) + b'Bad Gateway')
+                ]) + b'ad Gateway')
                 self.client.flush()
                 return True
         
