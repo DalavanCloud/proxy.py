@@ -57,7 +57,7 @@ def bytes_(s, encoding='utf-8', errors='strict'):
 
 version = bytes_(__version__)
 
-CRLF, COLON, SP = b'\r\n', b':', b' '
+CRLF, COLON, SP = '\r\n', ':', ' '
 
 HTTP_REQUEST_PARSER = 1
 HTTP_RESPONSE_PARSER = 2
